@@ -1,0 +1,76 @@
+# Exemplos de uso do RAPCON
+
+## Situação do exemplo
+
+Em um levantamento topográfico, alguns pontos não são medidos com a estação total. Eles são medidos com trena e nível a partir de um ponto já levantado: por exemplo, o terreno natural (TN) e a cerca ao lado da faixa. Em campo, anota-se a **distância** e a **diferença de cota** em relação a esse ponto.
+
+O RAPCON cria esses pontos COGO automaticamente, na direção indicada pelo usuário. Depois disso, basta reconstruir a superfície (*Rebuild*) para que ela passe a incluir os novos pontos.
+
+O arquivo `exemplo_01.dwg` tem um trecho de levantamento com **[N]** pontos de partida já preparados. A descrição de cada um traz as medidas de campo que devem ser usadas.
+
+## Requisitos
+
+- AutoCAD Civil 3D (versão testada: **[preencher]**)
+- `src/rapcon/RAPCON.lsp`
+- `exemplos/exemplo_01.dwg`
+
+## Passo a passo
+
+### 1. Abrir o desenho e carregar a rotina
+1. Abra `exemplo_01.dwg`.
+2. Digite `APPLOAD`, selecione `RAPCON.lsp` e clique em **Load**.
+3. Aparece a janela "R.A.P.C.O.N", que confirma o carregamento.
+
+### 2. Ligar o OSNAP *Node*
+Pressione `F3` ou use o menu *Object Snap* e ative **Node**. Com isso, ao clicar no ponto COGO, a rotina pega também a **cota (Z)** dele. Sem o Node, o Z fica igual a 0 e o resultado sai errado.
+
+### 3. Executar o comando
+Digite `RAPCON` e responda às perguntas:
+
+| Pergunta | O que fazer |
+|---|---|
+| Selecione ponto de partida | Clique no centro do ponto COGO destacado (ex.: ponto **[nº]**, descrição **[descrição]**) |
+| Determine a direção | Clique em um ponto **perpendicular à faixa**, seguindo o alinhamento dos pontos vizinhos. Clique **longe**: além do último ponto a ser criado (ver observação) |
+| Distância do ponto base | `10` |
+| Diferença de cota (+/-) | `-4` |
+| Descrição do novo ponto | `TN` |
+
+O ponto **TN** é criado. Em seguida, o comando pede o próximo ponto:
+
+| Pergunta | Valor |
+|---|---|
+| Nova distância | `8` (medida **a partir do ponto TN**, o último criado) |
+| Nova diferença de cota | `[valor]` (em relação ao TN) |
+| Nova descrição | `CERCA` |
+
+Pressione **Esc** para encerrar.
+
+### 4. Conferir o resultado
+A linha de comando mostra X, Y e Z de cada ponto criado. Confira à mão com as fórmulas do [memorial de cálculo](../docs/memorial_calculo_rapcon.md):
+
+- Ponto de partida: X = **[ ]**, Y = **[ ]**, Z = **[ ]**
+- TN esperado: X = **[ ]**, Y = **[ ]**, Z = **[Z − 4]**
+- CERCA esperada: X = **[ ]**, Y = **[ ]**, Z = **[ ]**
+
+*(print da linha de comando)*
+
+### 5. Atualizar a superfície
+No *Toolspace → Prospector*, clique com o botão direito na superfície **[nome]** e escolha **Rebuild**. A superfície passa a incluir os novos pontos.
+
+*(print antes / depois)*
+
+### 6. Repetir para os outros pontos
+Repita os passos 3 a 5 para os outros pontos de partida destacados no desenho:
+
+| Ponto de partida | Distância TN | ΔZ TN | Distância CERCA | ΔZ CERCA |
+|---|---|---|---|---|
+| [nº / descrição] | 10 | -4 | 8 | [ ] |
+| [ ] | [ ] | [ ] | [ ] | [ ] |
+| [ ] | [ ] | [ ] | [ ] | [ ] |
+| [ ] | [ ] | [ ] | [ ] | [ ] |
+
+## Observações
+
+- **Cada ponto da sequência é medido a partir do ponto criado antes dele**, e não a partir do primeiro ponto.
+- **Clique a direção bem longe.** Nos pontos seguintes, a rotina recalcula a direção do último ponto criado até o ponto clicado. Se a sequência passar desse ponto, a direção inverte.
+- Se o comando não pedir descrição ou cota, ative **Prompt For Descriptions** e **Prompt For Elevations** em *Point Creation*.
