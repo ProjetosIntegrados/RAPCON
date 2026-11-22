@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "nome_do_projeto"
+name = "RAPCON"
 version = "0.1.0"
 description = ""
-authors = ["Nome do Autor <email@example.com>"]
+authors = ["Milena Dressler <milenadressler@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "nome_do_projeto", from = "src" }]
+packages = [{ include = "RAPCON", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
