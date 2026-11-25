@@ -1,76 +1,128 @@
-# Exemplos de uso do RAPCON
+# RAPCON
 
-## Situação do exemplo
+> [!WARNING]
+> Este projeto foi desenvolvido por estudantes no contexto de uma disciplina de graduação e possui finalidade exclusivamente educacional. Os resultados não foram necessariamente validados para uso profissional e devem ser utilizados com cautela e verificados independentemente.
 
-Em um levantamento topográfico, alguns pontos não são medidos com a estação total. Eles são medidos com trena e nível a partir de um ponto já levantado: por exemplo, o terreno natural (TN) e a cerca ao lado da faixa. Em campo, anota-se a **distância** e a **diferença de cota** em relação a esse ponto.
+**RAPCON** (*Random Points Created Out of Nothing*) é uma rotina em AutoLISP para o **AutoCAD Civil 3D**. Ela cria pontos COGO a partir de um ponto já levantado, de uma direção, de uma distância horizontal e de uma diferença de cota.
 
-O RAPCON cria esses pontos COGO automaticamente, na direção indicada pelo usuário. Depois disso, basta reconstruir a superfície (*Rebuild*) para que ela passe a incluir os novos pontos.
+## Descrição
 
-O arquivo `exemplo_01.dwg` tem um trecho de levantamento com **[N]** pontos de partida já preparados. A descrição de cada um traz as medidas de campo que devem ser usadas.
+Em levantamentos topográficos, nem todos os pontos são medidos com a estação total. Pontos como o **terreno natural (TN)** ou uma **cerca** ao lado de uma faixa costumam ser medidos com trena e nível a partir de um ponto já levantado. Em campo, anota-se a distância e a diferença de cota.
+
+Sem uma ferramenta, o usuário precisa calcular as coordenadas de cada ponto à mão e criá-las uma a uma no Civil 3D. O processo é lento e sujeito a erros.
+
+O RAPCON automatiza esse processo:
+
+- o usuário seleciona o ponto de partida e indica a direção (por exemplo, perpendicular à faixa);
+- para cada novo ponto, informa a **distância**, a **diferença de cota** e a **descrição**;
+- a rotina calcula X, Y e Z e cria o ponto COGO no desenho;
+- os pontos são criados em sequência, cada um medido a partir do anterior;
+- depois disso, basta reconstruir (*Rebuild*) a superfície para incluir os novos pontos.
+
+Os cálculos estão descritos no [memorial de cálculo](docs/memorial_calculo_rapcon.md).
 
 ## Requisitos
 
-- AutoCAD Civil 3D (versão testada: **[preencher]**)
-- `src/rapcon/RAPCON.lsp`
-- `exemplos/exemplo_01.dwg`
+- AutoCAD Civil 3D (testado na versão **[preencher]**)
+- Em *Point Creation*, as opções **Prompt For Descriptions** e **Prompt For Elevations** ativadas
 
-## Passo a passo
+## Instalação
 
-### 1. Abrir o desenho e carregar a rotina
-1. Abra `exemplo_01.dwg`.
-2. Digite `APPLOAD`, selecione `RAPCON.lsp` e clique em **Load**.
-3. Aparece a janela "R.A.P.C.O.N", que confirma o carregamento.
+1. Baixe o repositório (*Code → Download ZIP*) ou a [versão mais recente](../../releases).
+2. No Civil 3D, digite `APPLOAD`.
+3. Selecione o arquivo `src/RAPCON/RAPCON.lsp` e clique em **Load**.
 
-### 2. Ligar o OSNAP *Node*
-Pressione `F3` ou use o menu *Object Snap* e ative **Node**. Com isso, ao clicar no ponto COGO, a rotina pega também a **cota (Z)** dele. Sem o Node, o Z fica igual a 0 e o resultado sai errado.
+> Para carregar automaticamente sempre que o Civil 3D abrir, adicione o arquivo em **Startup Suite**, na janela do `APPLOAD`.
 
-### 3. Executar o comando
-Digite `RAPCON` e responda às perguntas:
+## Uso
 
-| Pergunta | O que fazer |
-|---|---|
-| Selecione ponto de partida | Clique no centro do ponto COGO destacado (ex.: ponto **[nº]**, descrição **[descrição]**) |
-| Determine a direção | Clique em um ponto **perpendicular à faixa**, seguindo o alinhamento dos pontos vizinhos. Clique **longe**: além do último ponto a ser criado (ver observação) |
-| Distância do ponto base | `10` |
-| Diferença de cota (+/-) | `-4` |
-| Descrição do novo ponto | `TN` |
+1. Ligue o OSNAP **Node**, para que a rotina pegue a cota do ponto selecionado.
+2. Digite `RAPCON`.
+3. Clique no ponto COGO de partida.
+4. Clique em um ponto que indique a direção dos novos pontos.
+5. Para cada novo ponto, informe:
+   - a distância a partir do ponto anterior;
+   - a diferença de cota em relação ao ponto anterior (+/-);
+   - a descrição (ex.: `TN`, `CERCA`).
+6. Pressione **Enter** sem digitar nada na distância para encerrar.
 
-O ponto **TN** é criado. Em seguida, o comando pede o próximo ponto:
+Exemplo de sessão na linha de comando:
 
-| Pergunta | Valor |
-|---|---|
-| Nova distância | `8` (medida **a partir do ponto TN**, o último criado) |
-| Nova diferença de cota | `[valor]` (em relação ao TN) |
-| Nova descrição | `CERCA` |
+```text
+Comando: RAPCON
+Selecione ponto de partida:            (clique no ponto)
+Determine a direção:                   (clique na direção)
+Distância do ponto anterior <Enter para encerrar>: 10
+Diferença de cota do ponto anterior (+/-) <0>: -4
+Descrição do novo ponto: TN
+Coordenadas do novo ponto:
+X: ...
+Y: ...
+Z: ...
+Distância do ponto anterior <Enter para encerrar>:
+RAPCON: 1 ponto(s) criado(s).
+```
 
-Pressione **Esc** para encerrar.
+## Exemplos
 
-### 4. Conferir o resultado
-A linha de comando mostra X, Y e Z de cada ponto criado. Confira à mão com as fórmulas do [memorial de cálculo](../docs/memorial_calculo_rapcon.md):
+O diretório [`exemplos/`](exemplos/) traz um passo a passo completo com um desenho de levantamento (`exemplo_01.dwg`): criação de pontos de TN e cerca e atualização da superfície.
 
-- Ponto de partida: X = **[ ]**, Y = **[ ]**, Z = **[ ]**
-- TN esperado: X = **[ ]**, Y = **[ ]**, Z = **[Z − 4]**
-- CERCA esperada: X = **[ ]**, Y = **[ ]**, Z = **[ ]**
+## Testes
 
-*(print da linha de comando)*
+Os testes estão em [`tests/`](tests/) e verificam a função de cálculo `rapcon-calcular-coordenadas` com casos calculados à mão: direções de 0°, 45°, 90° e 180°, cota negativa e distância zero.
 
-### 5. Atualizar a superfície
-No *Toolspace → Prospector*, clique com o botão direito na superfície **[nome]** e escolha **Rebuild**. A superfície passa a incluir os novos pontos.
+Para rodar no Civil 3D (ou no AutoCAD):
 
-*(print antes / depois)*
+1. `APPLOAD` → `src/RAPCON/RAPCON.lsp`
+2. `APPLOAD` → `tests/teste_calculo_coordenadas.lsp`
+3. Digite `RAPCON_TESTES`
 
-### 6. Repetir para os outros pontos
-Repita os passos 3 a 5 para os outros pontos de partida destacados no desenho:
+Cada caso mostra `[PASSOU]` ou `[FALHOU]`. No final aparece o total.
 
-| Ponto de partida | Distância TN | ΔZ TN | Distância CERCA | ΔZ CERCA |
-|---|---|---|---|---|
-| [nº / descrição] | 10 | -4 | 8 | [ ] |
-| [ ] | [ ] | [ ] | [ ] | [ ] |
-| [ ] | [ ] | [ ] | [ ] | [ ] |
-| [ ] | [ ] | [ ] | [ ] | [ ] |
+## Estrutura do projeto
 
-## Observações
+```text
+.
+├── src/
+│   └── RAPCON/
+│       └── RAPCON.lsp               # cálculo das coordenadas e comando RAPCON
+├── tests/
+│   └── teste_calculo_coordenadas.lsp
+├── exemplos/
+│   ├── README.md                    # passo a passo do exemplo
+│   └── exemplo_01.dwg
+├── docs/
+│   └── memorial_calculo_rapcon.md
+├── README.md
+├── LICENSE
+└── pyproject.toml
+```
 
-- **Cada ponto da sequência é medido a partir do ponto criado antes dele**, e não a partir do primeiro ponto.
-- **Clique a direção bem longe.** Nos pontos seguintes, a rotina recalcula a direção do último ponto criado até o ponto clicado. Se a sequência passar desse ponto, a direção inverte.
-- Se o comando não pedir descrição ou cota, ative **Prompt For Descriptions** e **Prompt For Elevations** em *Point Creation*.
+## Desenvolvimento
+
+- Dentro do `RAPCON.lsp`, o cálculo fica numa função separada (`rapcon-calcular-coordenadas`), que não interage com o usuário nem com o desenho. O comando `RAPCON` pede os dados, chama essa função e cria os pontos. Assim o cálculo pode ser testado isoladamente.
+- A direção é calculada uma única vez, no início. Por isso ela não inverte quando os pontos passam do ponto clicado.
+- Para contribuir: abra uma *issue*, crie um *branch* para a alteração e envie um *Pull Request*.
+
+## Autores
+
+**Alunos**
+
+* [Milena Dressler] (2026/2)
+* [Vitor Salbego] (2026/2)
+* [Nome completo] (2026/2)
+
+**Professores orientadores**
+
+* Felipe Pinto da Motta Quevedo
+* Felipe Schaedler de Almeida
+
+## Referências
+
+- AUTODESK. *AutoLISP Developer's Guide*. Documentação do AutoCAD.
+- AUTODESK. *Civil 3D Help: Creating Points* (comando `CREATEPOINTMANUAL`).
+- [Referência de topografia usada pelo grupo, se houver]
+
+## Licença
+
+Este projeto está distribuído sob a licença MIT. Consulte o arquivo [`LICENSE`](LICENSE).
