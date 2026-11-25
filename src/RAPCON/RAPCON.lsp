@@ -5,8 +5,7 @@
 ; uma direcao, uma distancia horizontal e uma diferenca de cota.
 ;
 ; Uso:
-;   1. Carregar com APPLOAD os arquivos RAPCON.lsp e
-;      calculo_coordenadas.lsp
+;   1. Carregar com APPLOAD o arquivo RAPCON.lsp
 ;   2. Digitar RAPCON na linha de comando
 ;   3. Selecionar o ponto de partida (OSNAP Node ligado)
 ;   4. Indicar a direcao
@@ -14,8 +13,54 @@
 ;      novo ponto. Cada ponto e medido a partir do anterior.
 ;   6. Enter vazio na distancia (ou Esc) encerra o comando
 ;
-; Depende de: calculo_coordenadas.lsp (rapcon-calcular-coordenadas)
+; Calculos descritos em docs/memorial_calculo_rapcon.md
 ; =====================================================================
+
+; ---------------------------------------------------------------------
+; CALCULO DE COORDENADAS 3D
+;
+; Funcao responsavel pelos calculos geometricos. Nao interage com o
+; usuario nem com o desenho, por isso pode ser testada isoladamente
+; (ver tests/teste_calculo_coordenadas.lsp).
+;
+; Entradas:
+; pontoBase - Coordenadas iniciais X, Y e Z
+; direcao - Ponto que define a direcao
+; distancia - Distancia horizontal
+; diferencaCota - Variacao da cota
+;
+; Saida:
+; Lista com as coordenadas X, Y e Z
+
+(defun rapcon-calcular-coordenadas
+  (pontoBase direcao distancia diferencaCota
+   / angulo novoX novoY novoZ)
+
+  ; Determina o angulo de referencia
+  (setq angulo
+    (angle pontoBase direcao)
+  )
+
+  ; Calcula a coordenada X
+  (setq novoX
+    (+ (car pontoBase)
+       (* distancia (cos angulo)))
+  )
+
+  ; Calcula a coordenada Y
+  (setq novoY
+    (+ (cadr pontoBase)
+       (* distancia (sin angulo)))
+  )
+
+  ; Calcula a coordenada Z
+  (setq novoZ
+    (+ (caddr pontoBase) diferencaCota)
+  )
+
+  ; Retorna as coordenadas calculadas
+  (list novoX novoY novoZ)
+)
 
 (defun c:RAPCON ( / *error* osmodeAntigo cmdechoAntigo pontoBase
                     direcao angulo distancia diferencaCota descricao
@@ -33,12 +78,6 @@
   )
 
   (cond
-    ; Verifica se o modulo de calculo foi carregado
-    ((not rapcon-calcular-coordenadas)
-     (alert (strcat "RAPCON: o arquivo calculo_coordenadas.lsp nao foi carregado."
-                    "\nCarregue-o com APPLOAD junto com o RAPCON.lsp."))
-    )
-
     ; Ponto de partida (com Node ligado, o Z vem do ponto COGO)
     ((not (setq pontoBase (getpoint "\nSelecione ponto de partida: "))))
 
@@ -63,7 +102,7 @@
        ; Ponto auxiliar na direcao escolhida, a partir do ponto atual
        (setq pontoDirecao (polar pontoBase angulo 1.0))
 
-       ; Calculo das coordenadas (ver docs/memorial_calculo_rapcon.md)
+       ; Calculo das coordenadas (funcao rapcon-calcular-coordenadas, acima)
        (setq novoPonto
              (rapcon-calcular-coordenadas
                pontoBase pontoDirecao distancia diferencaCota))
