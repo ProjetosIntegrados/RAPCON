@@ -23,7 +23,7 @@ Os cálculos estão descritos no [memorial de cálculo](docs/memorial_calculo_ra
 
 ## Requisitos
 
-- AutoCAD Civil 3D (testado na versão **[preencher]**)
+- AutoCAD Civil 3D (testado na versão **2027**)
 - Em *Point Creation*, as opções **Prompt For Descriptions** e **Prompt For Elevations** ativadas
 
 ## Instalação
