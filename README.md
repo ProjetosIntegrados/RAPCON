@@ -30,11 +30,9 @@ Os cálculos estão descritos no [memorial de cálculo](docs/memorial_calculo_ra
 
 1. Baixe o repositório (*Code → Download ZIP*) ou a [versão mais recente](../../releases).
 2. No Civil 3D, digite `APPLOAD`.
-3. Selecione **os dois arquivos** da pasta `src/rapcon/` e clique em **Load**:
-   - `calculo_coordenadas.lsp`
-   - `RAPCON.lsp`
+3. Selecione o arquivo `src/RAPCON/RAPCON.lsp` e clique em **Load**.
 
-> Para carregar automaticamente sempre que o Civil 3D abrir, adicione os dois arquivos em **Startup Suite**, na janela do `APPLOAD`.
+> Para carregar automaticamente sempre que o Civil 3D abrir, adicione o arquivo em **Startup Suite**, na janela do `APPLOAD`.
 
 ## Uso
 
@@ -75,7 +73,7 @@ Os testes estão em [`tests/`](tests/) e verificam a função de cálculo `rapco
 
 Para rodar no Civil 3D (ou no AutoCAD):
 
-1. `APPLOAD` → `src/rapcon/calculo_coordenadas.lsp`
+1. `APPLOAD` → `src/RAPCON/RAPCON.lsp`
 2. `APPLOAD` → `tests/teste_calculo_coordenadas.lsp`
 3. Digite `RAPCON_TESTES`
 
@@ -86,9 +84,8 @@ Cada caso mostra `[PASSOU]` ou `[FALHOU]`. No final aparece o total.
 ```text
 .
 ├── src/
-│   └── rapcon/
-│       ├── RAPCON.lsp               # comando RAPCON (interação e criação dos pontos)
-│       └── calculo_coordenadas.lsp  # cálculo das coordenadas X, Y, Z
+│   └── RAPCON/
+│       └── RAPCON.lsp               # cálculo das coordenadas e comando RAPCON
 ├── tests/
 │   └── teste_calculo_coordenadas.lsp
 ├── exemplos/
@@ -103,7 +100,7 @@ Cada caso mostra `[PASSOU]` ou `[FALHOU]`. No final aparece o total.
 
 ## Desenvolvimento
 
-- O cálculo fica separado da interação com o usuário: `calculo_coordenadas.lsp` só calcula, e `RAPCON.lsp` pede os dados e cria os pontos. Assim o cálculo pode ser testado sem o Civil 3D interagir.
+- Dentro do `RAPCON.lsp`, o cálculo fica numa função separada (`rapcon-calcular-coordenadas`), que não interage com o usuário nem com o desenho. O comando `RAPCON` pede os dados, chama essa função e cria os pontos. Assim o cálculo pode ser testado isoladamente.
 - A direção é calculada uma única vez, no início. Por isso ela não inverte quando os pontos passam do ponto clicado.
 - Para contribuir: abra uma *issue*, crie um *branch* para a alteração e envie um *Pull Request*.
 
@@ -111,9 +108,9 @@ Cada caso mostra `[PASSOU]` ou `[FALHOU]`. No final aparece o total.
 
 **Alunos**
 
-* [Milena Dressler] (2026/2)
-* [Vitor Salbego] (2026/2)
-* [Nome completo] (2026/2)
+* Milena Dressler (2026/2)
+* Vitor Salbego (2026/2)
+
 
 **Professores orientadores**
 
@@ -124,7 +121,7 @@ Cada caso mostra `[PASSOU]` ou `[FALHOU]`. No final aparece o total.
 
 - AUTODESK. *AutoLISP Developer's Guide*. Documentação do AutoCAD.
 - AUTODESK. *Civil 3D Help: Creating Points* (comando `CREATEPOINTMANUAL`).
-- [Referência de topografia usada pelo grupo, se houver]
+
 
 ## Licença
 

@@ -2,7 +2,7 @@
 ; RAPCON - Testes da funcao rapcon-calcular-coordenadas
 ;
 ; Como rodar (no AutoCAD / Civil 3D):
-;   1. APPLOAD: carregar src/rapcon/calculo_coordenadas.lsp
+;   1. APPLOAD: carregar src/RAPCON/RAPCON.lsp
 ;   2. APPLOAD: carregar tests/teste_calculo_coordenadas.lsp
 ;   3. Digitar RAPCON_TESTES na linha de comando
 ;
@@ -40,7 +40,7 @@
 (defun c:RAPCON_TESTES ( / resultados)
   (if (not rapcon-calcular-coordenadas)
     (progn
-      (alert "Carregue src/rapcon/calculo_coordenadas.lsp antes de rodar os testes.")
+      (alert "Carregue src/RAPCON/RAPCON.lsp antes de rodar os testes.")
       (exit)
     )
   )
